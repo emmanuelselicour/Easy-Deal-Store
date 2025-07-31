@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EDS | Abonnements et Diamants Free Fire</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="https://files.catbox.moe/ioqzaq.jpg" type="image/jpg">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo" onclick="window.location.reload()">
+            <img src="https://files.catbox.moe/ioqzaq.jpg" alt="Logo EDS" class="logo-icon">
+            EDS
+        </div>
+        
+        <div class="hamburger" id="hamburger">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+    </nav>
+    
+    <div class="mobile-menu" id="mobileMenu">
+        <ul>
+            <li><a href="#home">Accueil</a></li>
+            <li><a href="#products">Produits</a></li>
+            <li class="has-dropdown">
+                <a href="#" class="dropdown-toggle">Plus</a>
+                <ul class="dropdown-menu">
+                    <li><a href="#about">À-propos</a></li>
+                    <li><a href="#report">Signaler un problème</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+
+    <section id="home" class="hero">
+        <h1>Bienvenue chez <span>EDS</span></h1>
+        <p>Abonnements et diamants Free Fire aux meilleurs prix!</p>
+    </section>
+
+    <section id="products" class="products">
+        <h2>Nos Produits</h2>
+        <div class="product-grid">
+            <div class="product-card">
+                <img src="https://files.catbox.moe/rsbfg1.jpg" alt="Netflix" class="product-image">
+                <h3>Abonnement Netflix</h3>
+                <p>600 HTG</p>
+                <button class="buy-btn" data-product="Abonnement Netflix" data-price="600">Commander</button>
+            </div>
+            <div class="product-card">
+                <img src="https://files.catbox.moe/2i5qdd.jpg" alt="Prime Video" class="product-image">
+                <h3>Abonnement Prime Video</h3>
+                <p>550 HTG</p>
+                <button class="buy-btn" data-product="Abonnement Prime Video" data-price="550">Commander</button>
+            </div>
+            <div class="product-card">
+                <img src="https://files.catbox.moe/p0rq3i.jpg" alt="Crunchyroll" class="product-image">
+                <h3>Abonnement Crunchyroll</h3>
+                <p>550 HTG</p>
+                <button class="buy-btn" data-product="Abonnement Crunchyroll" data-price="550">Commander</button>
+            </div>
+            <div class="product-card">
+                <img src="https://files.catbox.moe/tmsue5.jpg" alt="Wise" class="product-image">
+                <h3>Recharge Compte Wise</h3>
+                <p>Prix variable</p>
+                <button class="buy-btn" data-product="Recharge Compte Wise">Commander</button>
+            </div>
+            <div class="product-card">
+                <img src="https://files.catbox.moe/bj831t.jpg" alt="PayPal" class="product-image">
+                <h3>Création Compte PayPal</h3>
+                <p>Prix variable</p>
+                <button class="buy-btn" data-product="Création Compte PayPal">Commander</button>
+            </div>
+            <div class="product-card">
+                <img src="freefire.jpg" alt="Free Fire" class="product-image">
+                <h3>Diamants Free Fire</h3>
+                <p>220 HTG pour 100 diamants</p>
+                <button class="buy-btn" id="openDiamondModal">Commander</button>
+            </div>
+        </div>
+
+        <div id="diamondModal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h2>Acheter des Diamants Free Fire</h2>
+                <div class="diamond-calculator">
+                    <h3>Choisissez la quantité de diamants</h3>
+                    <input type="range" id="diamondSlider" min="100" max="5000" step="100" value="100">
+                    <p>Diamants: <span id="diamondCount">100</span></p>
+                    <div class="price-display">
+                        Prix Total: <span id="totalPrice">220</span> HTG
+                        <span id="discountBadge" class="discount-badge" style="display: none;"></span>
+                    </div>
+                    <button id="confirmDiamondPurchase" class="buy-btn">Confirmer Achat</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div id="checkoutModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <div id="orderFormContainer">
+                <h2>Passer Commande</h2>
+                <form id="orderForm" action="https://formspree.io/f/mvgqqkja" method="POST">
+                    <input type="text" id="clientName" name="Nom" placeholder="Nom complet" required>
+                    <input type="email" id="clientEmail" name="Email" placeholder="Votre email" required>
+                    <input type="tel" id="clientPhone" name="Téléphone" placeholder="Numéro WhatsApp" required>
+                    <input type="text" id="selectedProduct" name="Produit" readonly required>
+                    <input type="text" id="selectedPrice" name="Prix" readonly>
+                    
+                    <div class="payment-instructions">
+                        <p><strong>Instructions de paiement:</strong></p>
+                        <p>1. Après avoir effectué le transfert, trouvez l'ID de transaction dans votre notification (ex: 25070567399982 ou 123456789)</p>
+                        <p>2. Copiez cet ID numérique et collez-le ci-dessous</p>
+                        <div class="payment-numbers">
+                            <p>Numéros pour paiement:</p>
+                            <p>+509 3231 1840</p>
+                            <p>+509 4389 5284</p>
+                        </div>
+                    </div>
+                    
+                    <label for="transactionID">ID de Transaction (14 chiffres maximum)</label>
+                    <input type="text" id="transactionID" name="ID_Transaction" 
+                           placeholder="Ex: 25070567399982 ou 123456789" 
+                           pattern="[0-9]{9,14}" 
+                           title="Doit contenir entre 9 et 14 chiffres" required>
+                    <p id="idError"></p>
+                    
+                    <p id="errorMessage">Veuillez remplir tous les champs correctement!</p>
+                    <button type="submit">Envoyer Commande</button>
+                </form>
+            </div>
+            <div id="confirmationMessage" class="confirmation-message">
+                <h2>Merci pour votre commande! ✅</h2>
+                <p>Notre équipe vous contactera dans moins de 6 heures.</p>
+                <p>Redirection vers l'accueil dans <span id="countdown">10</span> secondes...</p>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <p>© 2024 EDS. Tous droits réservés.</p>
+    </footer>
+
+    <script src="main.js"></script>
+</body>
+  </html>
