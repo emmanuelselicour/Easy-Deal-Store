@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EDS SocialBoost - Followers et Likes Réseaux Sociaux</title>
+    <style>
+        :root {
+            --primary-color: #4a00e0;
+            --secondary-color: #f5f5f5;
+            --accent-color: #8e2de2;
+            --text-color: #333;
+            --light-color: #fff;
+            --dark-color: #1a1a1a;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: var(--secondary-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* Navbar stylée */
+        .navbar {
+            background: var(--primary-color);
+            color: white;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            transition: transform 0.3s;
+        }
+        
+        .logo:hover {
+            transform: scale(1.05);
+        }
+        
+        .logo-icon {
+            height: 30px;
+            width: 30px;
+            margin-right: 10px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        
+        /* Bouton menu animé */
+        .menu-btn {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            width: 30px;
+            height: 24px;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            padding: 0;
+            z-index: 1001;
+        }
+        
+        .menu-btn__line {
+            width: 100%;
+            height: 3px;
+            background: white;
+            border-radius: 3px;
+            transition: all 0.4s cubic-bezier(0.68, -0.6, 0.32, 1.6);
+        }
+        
+        .menu-btn__line:nth-child(1) {
+            transform-origin: top left;
+        }
+        
+        .menu-btn__line:nth-child(3) {
+            transform-origin: bottom left;
+        }
+        
+        .menu-btn.active .menu-btn__line:nth-child(1) {
+            transform: rotate(45deg) translate(5px, 5px);
+        }
+        
+        .menu-btn.active .menu-btn__line:nth-child(2) {
+            opacity: 0;
+        }
+        
+        .menu-btn.active .menu-btn__line:nth-child(3) {
+            transform: rotate(-45deg) translate(5px, -5px);
+        }
+        
+        /* Menu mobile avec animations */
+        .mobile-menu {
+            position: fixed;
+            top: 70px;
+            right: -100%;
+            width: 30%;
+            height: 40vh;
+            background: rgba(74, 0, 224, 0.98);
+            backdrop-filter: blur(5px);
+            z-index: 999;
+            display: flex;
+            flex-direction: column;
+            border-bottom-left-radius: 10px;
+            box-shadow: -5px 5px 15px rgba(0,0,0,0.2);
+            transition: all 0.4s cubic-bezier(0.68, -0.6, 0.32, 1.6);
+            overflow: hidden;
+        }
+        
+        .mobile-menu.active {
+            right: 0;
+        }
+        
+        .mobile-menu ul {
+            list-style: none;
+            width: 100%;
+            padding: 1rem;
+        }
+        
+        .mobile-menu li {
+            margin: 0.8rem 0;
+            opacity: 0;
+            transform: translateX(20px);
+        }
+        
+        .mobile-menu.active li {
+            animation: slideIn 0.4s forwards;
+        }
+        
+        .mobile-menu li:nth-child(1) { animation-delay: 0.1s; }
+        .mobile-menu li:nth-child(2) { animation-delay: 0.2s; }
+        .mobile-menu li:nth-child(3) { animation-delay: 0.3s; }
+        .mobile-menu li:nth-child(4) { animation-delay: 0.4s; }
+        
+        @keyframes slideIn {
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        .mobile-menu li a {
+            color: white;
+            text-decoration: none;
+            font-size: 1rem;
+            display: block;
+            padding: 0.6rem 1rem;
+            border-radius: 5px;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .mobile-menu li a::before {
+            content: '';
+            position: absolute;
+            left: -100%;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255,255,255,0.1);
+            transition: all 0.3s;
+            z-index: -1;
+        }
+        
+        .mobile-menu li a:hover::before {
+            left: 0;
+        }
+        
+        .mobile-menu li a:hover {
+            transform: translateX(5px);
+        }
+        
+        .menu-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.3);
+            z-index: 998;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+        
+        .menu-overlay.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 5rem auto 0;
+            padding: 2rem;
+            flex: 1;
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            color: var(--light-color);
+            text-align: center;
+            padding: 6rem 1rem 4rem;
+            clip-path: polygon(0 0, 100% 0, 100% 90%, 0 100%);
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            animation: fadeInUp 1s ease-out;
+        }
+        
+        h2 {
+            font-size: 2rem;
+            color: var(--primary-color);
+            margin: 2rem 0 1rem;
+        }
+        
+        h3 {
+            font-size: 1.5rem;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+        
+        p {
+            margin-bottom: 1.5rem;
+            animation: fadeInUp 1s ease-out 0.2s forwards;
+            opacity: 0;
+        }
+        
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+        
+        .service-card {
+            background-color: var(--light-color);
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.4s ease;
+            text-align: center;
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        
+        .service-card.animate {
+            animation: fadeInUp 0.6s ease-out forwards;
+        }
+        
+        .service-card:hover {
+            transform: translateY(-10px) !important;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .service-image {
+            width: 80px;
+            height: 80px;
+            object-fit: contain;
+            margin: 0 auto 1rem;
+            border-radius: 50%;
+            background: var(--secondary-color);
+            padding: 10px;
+            transition: transform 0.3s;
+        }
+        
+        .service-card:hover .service-image {
+            transform: rotate(15deg) scale(1.1);
+        }
+        
+        .order-btn {
+            background-color: var(--primary-color);
+            color: var(--light-color);
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            margin-top: 1rem;
+            transition: all 0.3s;
+            display: inline-block;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .order-btn:hover {
+            background-color: #3700b3;
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(74, 0, 224, 0.3);
+        }
+        
+        .order-btn:active {
+            transform: translateY(0);
+        }
+        
+        .order-btn::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 5px;
+            height: 5px;
+            background: rgba(255, 255, 255, 0.5);
+            opacity: 0;
+            border-radius: 100%;
+            transform: scale(1, 1) translate(-50%);
+            transform-origin: 50% 50%;
+        }
+        
+        .order-btn:focus:not(:active)::after {
+            animation: ripple 1s ease-out;
+        }
+        
+        @keyframes ripple {
+            0% {
+                transform: scale(0, 0);
+                opacity: 0.5;
+            }
+            100% {
+                transform: scale(20, 20);
+                opacity: 0;
+            }
+        }
+        
+        .order-form {
+            background-color: var(--light-color);
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            margin-top: 3rem;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            transform: translateY(30px);
+            opacity: 0;
+            transition: all 0.6s ease-out;
+        }
+        
+        .order-form.animate {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+        
+        select, input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+            background-color: var(--light-color);
+            transition: all 0.3s;
+        }
+        
+        select:focus, input:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(74, 0, 224, 0.2);
+            outline: none;
+        }
+        
+        .price-display {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin: 1.5rem 0;
+            color: var(--primary-color);
+            text-align: center;
+        }
+        
+        .payment-methods {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin: 1.5rem 0;
+            flex-wrap: wrap;
+        }
+        
+        .payment-methods img {
+            height: 50px;
+            width: auto;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s;
+        }
+        
+        .payment-methods img:hover {
+            transform: scale(1.1);
+        }
+        
+        hr {
+            border: none;
+            height: 1px;
+            background: linear-gradient(to right, transparent, var(--primary-color), transparent);
+            margin: 3rem 0;
+            opacity: 0.3;
+        }
+        
+        footer {
+            background-color: var(--dark-color);
+            color: var(--light-color);
+            text-align: center;
+            padding: 2rem;
+            margin-top: 3rem;
+        }
+        
+        /* Animations au scroll */
+        @media (prefers-reduced-motion: no-preference) {
+            [data-scroll] {
+                transition: opacity 0.7s, transform 0.7s;
+            }
+            
+            [data-scroll="fadeIn"] {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            
+            [data-scroll="fadeIn"].is-visible {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            
+            [data-scroll="fadeInUp"] {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            
+            [data-scroll="fadeInUp"].is-visible {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            header {
+                padding: 5rem 1rem 3rem;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            h2 {
+                font-size: 1.75rem;
+            }
+            
+            .container {
+                padding: 1.5rem;
+            }
+            
+            .service-card {
+                padding: 1.25rem;
+            }
+            
+            .order-form {
+                padding: 1.5rem;
+            }
+            
+            .mobile-menu {
+                width: 40%;
+                height: 50vh;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            header {
+                padding: 4rem 1rem 2rem;
+                clip-path: polygon(0 0, 100% 0, 100% 95%, 0 100%);
+            }
+            
+            h1 {
+                font-size: 1.75rem;
+            }
+            
+            .services-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .mobile-menu {
+                width: 70%;
+                height: 45vh;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo" onclick="window.location.reload()">
+            <img src="https://files.catbox.moe/ioqzaq.jpg" alt="EDS SocialBoost" class="logo-icon">
+            EDS SocialBoost
+        </div>
+        <button class="menu-btn" id="menuBtn">
+            <span class="menu-btn__line"></span>
+            <span class="menu-btn__line"></span>
+            <span class="menu-btn__line"></span>
+        </button>
+    </nav>
+    
+    <div class="menu-overlay" id="menuOverlay"></div>
+    
+    <div class="mobile-menu" id="mobileMenu">
+        <ul>
+            <li><a href="#home">Accueil</a></li>
+            <li><a href="#products">Nos Services</a></li>
+            <li><a href="#contact">Contact</a></li>
+            <li><a href="#report">Signaler un problème</a></li>
+        </ul>
+    </div>
+
+    <header id="home">
+        <div class="container">
+            <h1 data-scroll="fadeIn">Boostez vos Réseaux Sociaux</h1>
+            <p>Followers, likes et vues pour Instagram, YouTube, TikTok et plus!</p>
+        </div>
+    </header>
+    
+    <div class="container">
+        <section id="products">
+            <h2 data-scroll="fadeIn">Nos Services</h2>
+            <p data-scroll="fadeIn">Commandez des followers, likes, vues et commentaires pour tous vos réseaux sociaux</p>
+            
+            <div class="services-grid">
+                <div class="service-card" data-scroll="fadeInUp">
+                    <img src="https://files.catbox.moe/vayd1b.jpg" alt="Instagram" class="service-image">
+                    <h3>Instagram</h3>
+                    <p>Followers, likes, vues et commentaires réels pour votre compte Instagram</p>
+                    <button class="order-btn">Commander</button>
+                </div>
+                
+                <div class="service-card" data-scroll="fadeInUp" data-scroll-delay="0.1">
+                    <img src="https://files.catbox.moe/adwwxo.jpg" alt="YouTube" class="service-image">
+                    <h3>YouTube</h3>
+                    <p>Abonnés, likes et vues pour vos vidéos YouTube</p>
+                    <button class="order-btn">Commander</button>
+                </div>
+                
+                <div class="service-card" data-scroll="fadeInUp" data-scroll-delay="0.2">
+                    <img src="https://files.catbox.moe/0otcn1.jpg" alt="Facebook" class="service-image">
+                    <h3>Facebook</h3>
+                    <p>Likes, followers et réactions pour vos pages et publications Facebook</p>
+                    <button class="order-btn">Commander</button>
+                </div>
+                
+                <div class="service-card" data-scroll="fadeInUp" data-scroll-delay="0.3">
+                    <img src="https://files.catbox.moe/38mz1h.jpg" alt="TikTok" class="service-image">
+                    <h3>TikTok</h3>
+                    <p>Followers, likes et vues pour vos vidéos TikTok</p>
+                    <button class="order-btn">Commander</button>
+                </div>
+                
+                <div class="service-card" data-scroll="fadeInUp" data-scroll-delay="0.4">
+                    <img src="https://files.catbox.moe/yj4hh0.jpg" alt="WhatsApp" class="service-image">
+                    <h3>WhatsApp</h3>
+                    <p>Abonnés pour votre chaîne WhatsApp</p>
+                    <button class="order-btn">Commander</button>
+                </div>
+            </div>
+        </section>
+        
+        <hr data-scroll="fadeIn">
+        
+        <section class="order-form" id="orderFormSection" data-scroll="fadeIn">
+            <h2>Passer Commande</h2>
+            
+            <form id="orderForm" action="https://formspree.io/f/xdkddbpo" method="POST">
+                <div class="form-group">
+                    <label for="service">Service</label>
+                    <select id="service" name="service" required>
+                        <option value="">-- Sélectionnez un service --</option>
+                        <option value="followers">Followers/Abonnés</option>
+                        <option value="likes">Likes</option>
+                        <option value="views">Vues</option>
+                        <option value="comments">Commentaires</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="network">Réseau social</label>
+                    <select id="network" name="network" required>
+                        <option value="">-- Sélectionnez un réseau --</option>
+                        <option value="instagram">Instagram</option>
+                        <option value="youtube">YouTube</option>
+                        <option value="facebook">Facebook</option>
+                        <option value="tiktok">TikTok</option>
+                        <option value="whatsapp">WhatsApp</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="quantity">Quantité (minimum 5000)</label>
+                    <input type="number" id="quantity" name="quantity" min="5000" value="5000" required>
+                </div>
+                
+                <div class="price-display">
+                    Prix: <span id="price">810</span> HTG
+                </div>
+                
+                <div class="form-group">
+                    <label>Méthode de paiement</label>
+                    <div class="payment-methods">
+                        <img src="https://files.catbox.moe/788ew1.jpg" alt="MonCash">
+                        <img src="https://files.catbox.moe/v812y5.jpg" alt="NatCash">
+                    </div>
+                    <p style="text-align: center; margin-top: 0.5rem;">Veuillez effectuer le paiement et entrer l'ID de transaction</p>
+                </div>
+                
+                <div class="form-group">
+                    <label for="transaction_id">ID de transaction</label>
+                    <input type="text" id="transaction_id" name="transaction_id" required placeholder="Ex: MC123456789">
+                </div>
+                
+                <div class="form-group">
+                    <label for="fullname">Nom complet</label>
+                    <input type="text" id="fullname" name="fullname" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="phone">Numéro de téléphone</label>
+                    <input type="tel" id="phone" name="phone" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="username">Nom d'utilisateur/URL</label>
+                    <input type="text" id="username" name="username" required placeholder="Votre @username ou lien de page">
+                </div>
+                
+                <button type="submit" class="order-btn" style="width: 100%;">Confirmer la commande</button>
+            </form>
+        </section>
+    </div>
+    
+    <footer id="contact">
+        <div class="container">
+            <p>© 2024 EDS SocialBoost. Tous droits réservés.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Menu mobile amélioré
+        const menuBtn = document.getElementById('menuBtn');
+        const mobileMenu = document.getElementById('mobileMenu');
+        const menuOverlay = document.getElementById('menuOverlay');
+        
+        function toggleMenu() {
+            menuBtn.classList.toggle('active');
+            mobileMenu.classList.toggle('active');
+            menuOverlay.classList.toggle('active');
+            
+            if (mobileMenu.classList.contains('active')) {
+                document.body.style.overflow = 'hidden';
+            } else {
+                document.body.style.overflow = '';
+            }
+        }
+        
+        menuBtn.addEventListener('click', toggleMenu);
+        menuOverlay.addEventListener('click', toggleMenu);
+        
+        // Fermer le menu quand on clique sur un lien
+        document.querySelectorAll('.mobile-menu a').forEach(link => {
+            link.addEventListener('click', toggleMenu);
+        });
+        
+        // Animation des liens du menu au survol
+        document.querySelectorAll('.mobile-menu li a').forEach(link => {
+            link.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateX(5px)';
+            });
+            
+            link.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateX(0)';
+            });
+        });
+        
+        // Calcul du prix
+        const quantityInput = document.getElementById('quantity');
+        const priceDisplay = document.getElementById('price');
+        
+        quantityInput.addEventListener('input', calculatePrice);
+        
+        function calculatePrice() {
+            const quantity = parseInt(quantityInput.value);
+            const basePrice = 810;
+            const baseQuantity = 5000;
+            
+            let price = Math.round((quantity / baseQuantity) * basePrice);
+            price = Math.max(price, basePrice);
+            
+            priceDisplay.textContent = price;
+        }
+        
+        // Gestion de la soumission du formulaire
+        const orderForm = document.getElementById('orderForm');
+        
+        orderForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Effet de clic sur le bouton
+            const submitBtn = this.querySelector('button[type="submit"]');
+            submitBtn.classList.add('clicked');
+            setTimeout(() => submitBtn.classList.remove('clicked'), 300);
+            
+            // Envoi des données via Formspree
+            fetch(this.action, {
+                method: 'POST',
+                body: new FormData(this),
+                headers: {
+                    'Accept': 'application/json'
+                }
+            })
+            .then(response => {
+                if (response.ok) {
+                    // Animation de confirmation
+                    const formContainer = document.getElementById('orderFormSection');
+                    formContainer.innerHTML = `
+                        <div class="confirmation-animation">
+                            <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+                                <circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none"/>
+                                <path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
+                            </svg>
+                            <h2>Merci pour votre commande! ✅</h2>
+                            <p>Nous avons bien reçu votre paiement et votre commande est en cours de traitement.</p>
+                            <p>Vous devriez commencer à voir les résultats dans moins de 12 heures.</p>
+                            <p>Si après 12 heures vous ne voyez toujours pas de changement, veuillez <a href="#report">signaler un problème</a>.</p>
+                            <a href="https://easydealstore.netlify.app/#home" class="order-btn" style="display: inline-block; margin-top: 1rem;">Retour à l'accueil</a>
+                        </div>
+                    `;
+                    
+                    // Styles pour l'animation de confirmation
+                    const style = document.createElement('style');
+                    style.textContent = `
+                        .confirmation-animation {
+                            text-align: center;
+                            animation: fadeIn 0.6s ease-out;
+                        }
+                        
+                        .checkmark {
+                            width: 100px;
+                            height: 100px;
+                            margin: 0 auto 1.5rem;
+                            display: block;
+                        }
+                        
+                        .checkmark__circle {
+                            stroke: var(--primary-color);
+                            stroke-width: 2;
+                            animation: stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+                        }
+                        
+                        .checkmark__check {
+                            stroke: var(--primary-color);
+                            stroke-width: 2;
+                            stroke-linecap: round;
+                            animation: stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.8s forwards;
+                            stroke-dasharray: 48;
+                            stroke-dashoffset: 48;
+                        }
+                        
+                        @keyframes stroke {
+                            100% {
+                                stroke-dashoffset: 0;
+                            }
+                        }
+                    `;
+                    document.head.appendChild(style);
+                } else {
+                    throw new Error('Erreur lors de l\'envoi du formulaire');
+                }
+            })
+            .catch(error => {
+                alert('Une erreur s\'est produite. Veuillez réessayer.');
+                console.error(error);
+            });
+        });
+        
+        // Animation au scroll
+        function animateOnScroll() {
+            const elements = document.querySelectorAll('[data-scroll]');
+            
+            elements.forEach(element => {
+                const elementTop = element.getBoundingClientRect().top;
+                const windowHeight = window.innerHeight;
+                
+                if (elementTop < windowHeight - 100) {
+                    element.classList.add('is-visible');
+                }
+            });
+        }
+        
+        // Délai pour les animations
+        document.querySelectorAll('[data-scroll-delay]').forEach(el => {
+            const delay = el.getAttribute('data-scroll-delay');
+            el.style.transitionDelay = `${delay}s`;
+        });
+        
+        // Détection du scroll
+        window.addEventListener('scroll', animateOnScroll);
+        window.addEventListener('load', animateOnScroll);
+        
+        // Initialisation
+        animateOnScroll();
+    </script>
+</body>
+</html>
