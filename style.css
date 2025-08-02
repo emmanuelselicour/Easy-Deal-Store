@@ -319,3 +319,31 @@ input[type="range"] {
     color: #4a00e0;
     font-size: 1.2rem;
 }
+
+
+.promo-banner {
+    background: linear-gradient(135deg, #8e2de2, #4a00e0);
+    color: white;
+    padding: 2rem 1rem;
+    text-align: center;
+}
+
+.promo-banner p {
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+}
+
+.promo-btn {
+    background: white;
+    color: #4a00e0;
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: background 0.3s;
+}
+
+.promo-btn:hover {
+    background: #ddd;
+}
